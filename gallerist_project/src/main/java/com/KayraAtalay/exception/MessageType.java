@@ -14,8 +14,10 @@ public enum MessageType {
 	USERNAME_NOT_CREATED("1008", "This username is already exists"),
 	USERNAME_OR_PASSWORD_INVALID("1009", "Wrong username or password"),
 	REFRESH_TOKEN_NOT_FOUND("1010", "Could not find the refresh token"),
-	REFRESH_TOKEN_EXPIRED("1011", "This refresh token is expired");
-
+	REFRESH_TOKEN_EXPIRED("1011", "This refresh token is expired"),
+	ADDRESS_NOT_FOUND("1012", "Could not find the address"),
+	ACCOUNT_NOT_FOUND("1013", "Could not find the account"),
+	TCKN_ALREADY_EXISTS("1014", "This tckn is already created");
 	
 	
 	 private String code;
