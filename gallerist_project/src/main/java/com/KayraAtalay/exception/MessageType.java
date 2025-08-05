@@ -19,7 +19,12 @@ public enum MessageType {
 	ACCOUNT_NOT_FOUND("1013", "Could not find the account"),
 	GALLERIST_NOT_FOUND("1014", "Could not find the gallerist"),
 	CAR_NOT_FOUND("1015", "Could not find the car"),
-	TCKN_ALREADY_EXISTS("1016", "This tckn is already created");
+	CUSTOMER_NOT_FOUND("1016", "Could not find the customer"),
+	TCKN_ALREADY_EXISTS("1017", "This tckn is already created"),
+	CURRENCY_RATES_IS_OCCURED("1018", "Could not get exchange rate"),
+	CUSTOMER_AMOUNT_IS_NOT_ENOUGH("1019", "The customer's money is not enough to buy this car"),
+	CAR_IS_ALREADY_SOLD("1020", "This car is already sold");
+	
 	
 	
 	 private String code;
