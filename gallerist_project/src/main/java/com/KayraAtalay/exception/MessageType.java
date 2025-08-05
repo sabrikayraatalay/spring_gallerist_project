@@ -17,7 +17,9 @@ public enum MessageType {
 	REFRESH_TOKEN_EXPIRED("1011", "This refresh token is expired"),
 	ADDRESS_NOT_FOUND("1012", "Could not find the address"),
 	ACCOUNT_NOT_FOUND("1013", "Could not find the account"),
-	TCKN_ALREADY_EXISTS("1014", "This tckn is already created");
+	GALLERIST_NOT_FOUND("1014", "Could not find the gallerist"),
+	CAR_NOT_FOUND("1015", "Could not find the car"),
+	TCKN_ALREADY_EXISTS("1016", "This tckn is already created");
 	
 	
 	 private String code;
