@@ -97,20 +97,14 @@ public class CustomerServiceImpl implements ICustomerService {
 		return toDto(optional.get());
 
 	}
-	
-	
+
 	@Override
 	public Page<Customer> findAllPageable(Pageable pageable) {
-		
+
 		Page<Customer> page = customerRepository.findAll(pageable);
-		
+
 		return page;
 	}
-	
-	
-	
-	
-
 
 	private DtoCustomer toDto(Customer customer) {
 
@@ -130,13 +124,13 @@ public class CustomerServiceImpl implements ICustomerService {
 
 	@Override
 	public List<DtoCustomer> toDtoList(List<Customer> customers) {
-		
-		if(customers.isEmpty()) {
+
+		if (customers.isEmpty()) {
 			throw new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, null));
 		}
-		
+
 		List<DtoCustomer> dtoCustomers = new ArrayList<>();
-		
+
 		for (Customer customer : customers) {
 			DtoCustomer dtoCustomer = new DtoCustomer();
 			DtoAddress dtoAddress = new DtoAddress();
@@ -148,13 +142,37 @@ public class CustomerServiceImpl implements ICustomerService {
 
 			dtoCustomer.setDtoAddress(dtoAddress);
 			dtoCustomer.setDtoAccount(dtoAccount);
-			
+
 			dtoCustomers.add(dtoCustomer);
 		}
-		
+
 		return dtoCustomers;
 	}
 
-	
+	@Override
+	public DtoAccount findCustomerAccount(Long id) {
+
+		Optional<Customer> optCustomer = customerRepository.findById(id);
+		if (optCustomer.isEmpty()) {
+			throw new BaseException(new ErrorMessage(MessageType.CUSTOMER_NOT_FOUND, id.toString()));
+		}
+
+		DtoAccount dtoAccount = new DtoAccount();
+		BeanUtils.copyProperties(optCustomer.get().getAccount(), dtoAccount);
+
+		return dtoAccount;
+	}
+
+	@Override
+	public DtoCustomer findCustomerByFirstName(String firstName) {
+
+		Optional<Customer> optCustomer = customerRepository.findByFirstName(firstName);
+		if (optCustomer.isEmpty()) {
+			throw new BaseException(new ErrorMessage(MessageType.CUSTOMER_NOT_FOUND, firstName));
+		}
+
+		return toDto(optCustomer.get());
+
+	}
 
 }

@@ -1,5 +1,6 @@
 package com.KayraAtalay.controller;
 
+import com.KayraAtalay.dto.DtoAccount;
 import com.KayraAtalay.dto.DtoCustomer;
 import com.KayraAtalay.dto.DtoCustomerIU;
 import com.KayraAtalay.utils.PageableRequest;
@@ -12,5 +13,9 @@ public interface IRestCustomerController {
 	public RootEntity<DtoCustomer> findCustomerById(Long id);
 	
 	public RootEntity<RestPageableEntity<DtoCustomer>> findAllPageable(PageableRequest pageableRequest);
+	
+	public RootEntity<DtoAccount> findCustomerAccount(Long id);
+	
+	public RootEntity<DtoCustomer> findCustomerByFirstName(String firstName);
 
 }

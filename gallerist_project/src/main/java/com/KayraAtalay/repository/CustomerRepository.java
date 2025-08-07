@@ -11,5 +11,7 @@ import com.KayraAtalay.model.Customer;
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 	
 	Optional<Customer> findByTckn(String tckn);
+	
+	Optional<Customer> findByFirstName(String firstName);
 
 }

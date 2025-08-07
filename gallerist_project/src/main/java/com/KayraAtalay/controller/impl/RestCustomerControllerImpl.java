@@ -7,11 +7,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.KayraAtalay.controller.IRestCustomerController;
 import com.KayraAtalay.controller.RestBaseController;
 import com.KayraAtalay.controller.RootEntity;
+import com.KayraAtalay.dto.DtoAccount;
 import com.KayraAtalay.dto.DtoCustomer;
 import com.KayraAtalay.dto.DtoCustomerIU;
 import com.KayraAtalay.model.Customer;
@@ -49,6 +51,18 @@ public class RestCustomerControllerImpl extends RestBaseController implements IR
 		
 		RestPageableEntity<DtoCustomer> pageableResponse = toPageableResponse(page, customerService.toDtoList(page.getContent()));
 		return ok(pageableResponse);
+	}
+
+	@GetMapping("/account/{id}")
+	@Override
+	public RootEntity<DtoAccount> findCustomerAccount(@PathVariable Long id) {
+				return ok(customerService.findCustomerAccount(id));
+	}
+
+	@GetMapping("")
+	@Override
+	public RootEntity<DtoCustomer> findCustomerByFirstName(@RequestParam String firstName) {
+		return ok(customerService.findCustomerByFirstName(firstName.substring(0, 1).toUpperCase() + firstName.substring(1)));
 	}
 
 }
