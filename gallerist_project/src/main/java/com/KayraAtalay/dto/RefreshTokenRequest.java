@@ -1,6 +1,6 @@
 package com.KayraAtalay.dto;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class RefreshTokenRequest {
 	
-	@NotEmpty
+	@NotBlank(message = "Refresh token cannot be empty or just spaces")
 	private String refreshToken;
 
 }

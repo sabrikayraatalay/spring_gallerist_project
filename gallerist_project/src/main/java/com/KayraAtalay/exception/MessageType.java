@@ -24,7 +24,8 @@ public enum MessageType {
 	CURRENCY_RATES_IS_OCCURED("1018", "Could not get exchange rate"),
 	CUSTOMER_AMOUNT_IS_NOT_ENOUGH("1019", "The customer's money is not enough to buy this car"),
 	CAR_IS_ALREADY_SOLD("1020", "This car is already sold"),
-	CAR_IS_NOT_BELONG_TO_GALLERIST("1021", "This car is not belong this gallerist");
+	CAR_IS_NOT_BELONG_TO_GALLERIST("1021", "This car is not belong this gallerist"),
+	ACCOUNT_NO_ALREADY_EXISTS("1022", "This Account Number is already belongs to another account : ");
 	
 	
 	

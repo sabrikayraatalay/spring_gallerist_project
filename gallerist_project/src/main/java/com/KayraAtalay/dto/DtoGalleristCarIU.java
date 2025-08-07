@@ -8,10 +8,10 @@ import lombok.Setter;
 @Setter
 public class DtoGalleristCarIU {
 	
-	@NotNull
+	@NotNull(message = "Gallerist ID cannot be null")
 	private Long galleristId;
 	
-	@NotNull
+	@NotNull(message = "Car ID cannot be null")
 	private Long carId;
 
 }

@@ -1,6 +1,6 @@
 package com.KayraAtalay.dto;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,16 +8,16 @@ import lombok.Setter;
 @Setter
 public class DtoAddressIU {
 
-	@NotEmpty
-	private String city;
+    @NotBlank(message = "City cannot be empty or just spaces")
+    private String city;
 
-	@NotEmpty
-	private String district;
+    @NotBlank(message = "District cannot be empty or just spaces")
+    private String district;
 
-	@NotEmpty
-	private String neighborhood;
+    @NotBlank(message = "Neighborhood cannot be empty or just spaces")
+    private String neighborhood;
 
-	@NotEmpty
-	private String street;
+    @NotBlank(message = "Street cannot be empty or just spaces")
+    private String street;
 
 }

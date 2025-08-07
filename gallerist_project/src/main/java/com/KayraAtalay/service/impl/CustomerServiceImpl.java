@@ -1,10 +1,14 @@
 package com.KayraAtalay.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.KayraAtalay.dto.DtoAccount;
@@ -59,27 +63,98 @@ public class CustomerServiceImpl implements ICustomerService {
 
 	@Override
 	public DtoCustomer saveCustomer(DtoCustomerIU dtoCustomerIU) {
-		
+
 		Optional<Customer> optCustomer = customerRepository.findByTckn(dtoCustomerIU.getTckn());
 		if (optCustomer.isPresent()) {
 			throw new BaseException(new ErrorMessage(MessageType.TCKN_ALREADY_EXISTS, null));
 		}
-		
+
 		Customer savedCustomer = customerRepository.save(createCustomer(dtoCustomerIU));
-		
+
 		DtoCustomer dtoCustomer = new DtoCustomer();
 		DtoAddress dtoAddress = new DtoAddress();
 		DtoAccount dtoAccount = new DtoAccount();
-		
+
 		BeanUtils.copyProperties(savedCustomer, dtoCustomer);
 		BeanUtils.copyProperties(savedCustomer.getAddress(), dtoAddress);
 		BeanUtils.copyProperties(savedCustomer.getAccount(), dtoAccount);
-		
+
 		dtoCustomer.setDtoAddress(dtoAddress);
 		dtoCustomer.setDtoAccount(dtoAccount);
-		
-		
+
 		return dtoCustomer;
 	}
+
+	@Override
+	public DtoCustomer findCustomerById(Long id) {
+
+		Optional<Customer> optional = customerRepository.findById(id);
+
+		if (optional.isEmpty()) {
+			throw new BaseException(new ErrorMessage(MessageType.CUSTOMER_NOT_FOUND, null));
+		}
+
+		return toDto(optional.get());
+
+	}
+	
+	
+	@Override
+	public Page<Customer> findAllPageable(Pageable pageable) {
+		
+		Page<Customer> page = customerRepository.findAll(pageable);
+		
+		return page;
+	}
+	
+	
+	
+	
+
+
+	private DtoCustomer toDto(Customer customer) {
+
+		DtoCustomer dtoCustomer = new DtoCustomer();
+		DtoAddress dtoAddress = new DtoAddress();
+		DtoAccount dtoAccount = new DtoAccount();
+
+		BeanUtils.copyProperties(customer, dtoCustomer);
+		BeanUtils.copyProperties(customer.getAddress(), dtoAddress);
+		BeanUtils.copyProperties(customer.getAccount(), dtoAccount);
+
+		dtoCustomer.setDtoAddress(dtoAddress);
+		dtoCustomer.setDtoAccount(dtoAccount);
+
+		return dtoCustomer;
+	}
+
+	@Override
+	public List<DtoCustomer> toDtoList(List<Customer> customers) {
+		
+		if(customers.isEmpty()) {
+			throw new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, null));
+		}
+		
+		List<DtoCustomer> dtoCustomers = new ArrayList<>();
+		
+		for (Customer customer : customers) {
+			DtoCustomer dtoCustomer = new DtoCustomer();
+			DtoAddress dtoAddress = new DtoAddress();
+			DtoAccount dtoAccount = new DtoAccount();
+
+			BeanUtils.copyProperties(customer, dtoCustomer);
+			BeanUtils.copyProperties(customer.getAddress(), dtoAddress);
+			BeanUtils.copyProperties(customer.getAccount(), dtoAccount);
+
+			dtoCustomer.setDtoAddress(dtoAddress);
+			dtoCustomer.setDtoAccount(dtoAccount);
+			
+			dtoCustomers.add(dtoCustomer);
+		}
+		
+		return dtoCustomers;
+	}
+
+	
 
 }

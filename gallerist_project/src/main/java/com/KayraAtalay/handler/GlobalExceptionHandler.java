@@ -61,7 +61,6 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.badRequest().body(createApiError(errorsMap, request));
 	}
 	
-	
 
 	private String getHostName() {
 		try {

@@ -8,13 +8,13 @@ import lombok.Setter;
 @Setter
 public class DtoSaledCarIU {
 	
-	@NotNull
+	@NotNull(message = "Customer ID cannot be null")
 	private Long customerId;
 	
-	@NotNull
+	@NotNull(message = "Gallerist ID cannot be null")
 	private Long galleristId;
 	
-	@NotNull
+	@NotNull(message = "Car ID cannot be null")
 	private Long carId;
 
 }
