@@ -24,9 +24,11 @@ import com.KayraAtalay.exception.MessageType;
 import com.KayraAtalay.model.Car;
 import com.KayraAtalay.model.Customer;
 import com.KayraAtalay.model.Gallerist;
+import com.KayraAtalay.model.GalleristCar;
 import com.KayraAtalay.model.SaledCar;
 import com.KayraAtalay.repository.CarRepository;
 import com.KayraAtalay.repository.CustomerRepository;
+import com.KayraAtalay.repository.GalleristCarRepository;
 import com.KayraAtalay.repository.GalleristRepository;
 import com.KayraAtalay.repository.SaledCarRepository;
 import com.KayraAtalay.service.ICurrencyRatesService;
@@ -50,6 +52,15 @@ public class SaledCarServiceImpl implements ISaledCarService {
 
 	@Autowired
 	private ICurrencyRatesService currencyRatesService;
+	
+	@Autowired
+	private GalleristCarRepository galleristCarRepository;
+	
+	
+	private boolean checkGalleristCarOwnership(Long galleristId, Long carId) {
+	    Optional<GalleristCar> optGalleristCar = galleristCarRepository.findByGalleristIdAndCarId(galleristId, carId);
+	    return optGalleristCar.isPresent();
+	}
 
 	
 	
@@ -62,6 +73,9 @@ public class SaledCarServiceImpl implements ISaledCarService {
 		BigDecimal customerUSDAmount = customer.getAccount().getAmount().divide(usd, 2, RoundingMode.HALF_UP);
 		return customerUSDAmount;
 	}
+	
+	
+	
 
 	private boolean checkCarStatus(Long carId) {
 
@@ -77,6 +91,10 @@ public class SaledCarServiceImpl implements ISaledCarService {
 		return false;
 
 	}
+	
+	
+	
+	
 
 	public BigDecimal remainingCustomerAmount(Customer customer, Car car) {
 
@@ -90,6 +108,10 @@ public class SaledCarServiceImpl implements ISaledCarService {
 		return remainingCustomerUSDAmount.multiply(usd);
 
 	}
+	
+	
+	
+	
 
 	public boolean checkAmount(Customer customer, Car car) {
 
@@ -117,6 +139,10 @@ public class SaledCarServiceImpl implements ISaledCarService {
 	    // Default case for unsupported currency combinations
 	    return false;
 	}
+	
+	
+	
+	
 
 	private SaledCar createSaledCar(DtoSaledCarIU dtoSaledCarIU) {
 		SaledCar saledCar = new SaledCar();
@@ -146,9 +172,18 @@ public class SaledCarServiceImpl implements ISaledCarService {
 		return saledCar;
 
 	}
+	
+	
+	
+	
+	
 
 	@Override
 	public DtoSaledCar buyCar(DtoSaledCarIU dtoSaledCarIU) {
+		
+		if (!checkGalleristCarOwnership(dtoSaledCarIU.getGalleristId(), dtoSaledCarIU.getCarId())) {
+	        throw new BaseException(new ErrorMessage(MessageType.CAR_IS_NOT_BELONG_TO_GALLERIST, ""));
+	    }
 
 		if (!checkCarStatus(dtoSaledCarIU.getCarId())) {
 			throw new BaseException(new ErrorMessage(MessageType.CAR_IS_ALREADY_SOLD, ""));
@@ -216,6 +251,9 @@ public class SaledCarServiceImpl implements ISaledCarService {
 	
 	
 	
+	
+	
+	
 
 	public DtoSaledCar toDto(SaledCar saledCar) {
 		DtoSaledCar dtoSaledCar = new DtoSaledCar();
@@ -240,6 +278,7 @@ public class SaledCarServiceImpl implements ISaledCarService {
 
 		// gallerist
 		dtoGallerist.setCreateTime(new Date());
+		dtoGallerist.setAddress(dtoAddress);
 		dtoSaledCar.setGallerist(dtoGallerist);
 
 		// car
@@ -249,6 +288,9 @@ public class SaledCarServiceImpl implements ISaledCarService {
 		return dtoSaledCar;
 
 	}
+	
+	
+	
 	
 	public BigDecimal convertCustomerAmountToTL(Customer customer) {
 		
@@ -261,6 +303,9 @@ public class SaledCarServiceImpl implements ISaledCarService {
 	    BigDecimal customerTLAmount = customer.getAccount().getAmount().multiply(usd);
 	    return customerTLAmount;
 	}
+	
+	
+	
 
 	public BigDecimal remainingCustomerAmountForUSD(Customer customer, Car car) {
 		
