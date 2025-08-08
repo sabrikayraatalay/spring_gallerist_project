@@ -1,5 +1,6 @@
 package com.KayraAtalay.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,6 +13,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 	
 	Optional<Customer> findByTckn(String tckn);
 	
-	Optional<Customer> findByFirstName(String firstName);
+	List<Customer> findByFirstName(String firstName);
 
 }

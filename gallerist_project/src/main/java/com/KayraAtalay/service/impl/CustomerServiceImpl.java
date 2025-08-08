@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.KayraAtalay.dto.DtoAccount;
 import com.KayraAtalay.dto.DtoAddress;
+import com.KayraAtalay.dto.DtoAddressIU;
 import com.KayraAtalay.dto.DtoCustomer;
 import com.KayraAtalay.dto.DtoCustomerIU;
 import com.KayraAtalay.exception.BaseException;
@@ -38,17 +39,19 @@ public class CustomerServiceImpl implements ICustomerService {
 	@Autowired
 	private AccountRepository accountRepository;
 
-	private Customer createCustomer(DtoCustomerIU dtoCustomerIU) {
+    // --- PRIVATE HELPER METHODS ---
 
-		// Checking addressId and accountId in request
+	private Customer createCustomer(DtoCustomerIU dtoCustomerIU) {
 		Optional<Address> optAddress = addressRepository.findById(dtoCustomerIU.getAddressId());
 		if (optAddress.isEmpty()) {
-			throw new BaseException(new ErrorMessage(MessageType.ADDRESS_NOT_FOUND, null));
+			throw new BaseException(
+					new ErrorMessage(MessageType.ADDRESS_NOT_FOUND, dtoCustomerIU.getAddressId().toString()));
 		}
 
 		Optional<Account> optAccount = accountRepository.findById(dtoCustomerIU.getAccountId());
 		if (optAccount.isEmpty()) {
-			throw new BaseException(new ErrorMessage(MessageType.ACCOUNT_NOT_FOUND, null));
+			throw new BaseException(
+					new ErrorMessage(MessageType.ACCOUNT_NOT_FOUND, dtoCustomerIU.getAccountId().toString()));
 		}
 
 		Customer customer = new Customer();
@@ -61,53 +64,7 @@ public class CustomerServiceImpl implements ICustomerService {
 		return customer;
 	}
 
-	@Override
-	public DtoCustomer saveCustomer(DtoCustomerIU dtoCustomerIU) {
-
-		Optional<Customer> optCustomer = customerRepository.findByTckn(dtoCustomerIU.getTckn());
-		if (optCustomer.isPresent()) {
-			throw new BaseException(new ErrorMessage(MessageType.TCKN_ALREADY_EXISTS, null));
-		}
-
-		Customer savedCustomer = customerRepository.save(createCustomer(dtoCustomerIU));
-
-		DtoCustomer dtoCustomer = new DtoCustomer();
-		DtoAddress dtoAddress = new DtoAddress();
-		DtoAccount dtoAccount = new DtoAccount();
-
-		BeanUtils.copyProperties(savedCustomer, dtoCustomer);
-		BeanUtils.copyProperties(savedCustomer.getAddress(), dtoAddress);
-		BeanUtils.copyProperties(savedCustomer.getAccount(), dtoAccount);
-
-		dtoCustomer.setDtoAddress(dtoAddress);
-		dtoCustomer.setDtoAccount(dtoAccount);
-
-		return dtoCustomer;
-	}
-
-	@Override
-	public DtoCustomer findCustomerById(Long id) {
-
-		Optional<Customer> optional = customerRepository.findById(id);
-
-		if (optional.isEmpty()) {
-			throw new BaseException(new ErrorMessage(MessageType.CUSTOMER_NOT_FOUND, null));
-		}
-
-		return toDto(optional.get());
-
-	}
-
-	@Override
-	public Page<Customer> findAllPageable(Pageable pageable) {
-
-		Page<Customer> page = customerRepository.findAll(pageable);
-
-		return page;
-	}
-
 	private DtoCustomer toDto(Customer customer) {
-
 		DtoCustomer dtoCustomer = new DtoCustomer();
 		DtoAddress dtoAddress = new DtoAddress();
 		DtoAccount dtoAccount = new DtoAccount();
@@ -122,9 +79,7 @@ public class CustomerServiceImpl implements ICustomerService {
 		return dtoCustomer;
 	}
 
-	@Override
-	public List<DtoCustomer> toDtoList(List<Customer> customers) {
-
+	private List<DtoCustomer> toDtoList(List<Customer> customers) {
 		if (customers.isEmpty()) {
 			throw new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, null));
 		}
@@ -132,26 +87,43 @@ public class CustomerServiceImpl implements ICustomerService {
 		List<DtoCustomer> dtoCustomers = new ArrayList<>();
 
 		for (Customer customer : customers) {
-			DtoCustomer dtoCustomer = new DtoCustomer();
-			DtoAddress dtoAddress = new DtoAddress();
-			DtoAccount dtoAccount = new DtoAccount();
-
-			BeanUtils.copyProperties(customer, dtoCustomer);
-			BeanUtils.copyProperties(customer.getAddress(), dtoAddress);
-			BeanUtils.copyProperties(customer.getAccount(), dtoAccount);
-
-			dtoCustomer.setDtoAddress(dtoAddress);
-			dtoCustomer.setDtoAccount(dtoAccount);
-
-			dtoCustomers.add(dtoCustomer);
+			dtoCustomers.add(toDto(customer));
 		}
 
 		return dtoCustomers;
 	}
+    
+    // --- PUBLIC SERVICE METHODS ---
+
+	@Override
+	public DtoCustomer saveCustomer(DtoCustomerIU dtoCustomerIU) {
+		Optional<Customer> optCustomer = customerRepository.findByTckn(dtoCustomerIU.getTckn());
+		if (optCustomer.isPresent()) {
+			throw new BaseException(new ErrorMessage(MessageType.TCKN_ALREADY_EXISTS, dtoCustomerIU.getTckn()));
+		}
+
+		Customer savedCustomer = customerRepository.save(createCustomer(dtoCustomerIU));
+		return toDto(savedCustomer);
+	}
+
+	@Override
+	public DtoCustomer findCustomerById(Long id) {
+		Optional<Customer> optional = customerRepository.findById(id);
+		if (optional.isEmpty()) {
+			throw new BaseException(new ErrorMessage(MessageType.CUSTOMER_NOT_FOUND, id.toString()));
+		}
+
+		return toDto(optional.get());
+	}
+
+	@Override
+	public Page<Customer> findAllPageable(Pageable pageable) {
+		Page<Customer> page = customerRepository.findAll(pageable);
+		return page;
+	}
 
 	@Override
 	public DtoAccount findCustomerAccount(Long id) {
-
 		Optional<Customer> optCustomer = customerRepository.findById(id);
 		if (optCustomer.isEmpty()) {
 			throw new BaseException(new ErrorMessage(MessageType.CUSTOMER_NOT_FOUND, id.toString()));
@@ -164,15 +136,53 @@ public class CustomerServiceImpl implements ICustomerService {
 	}
 
 	@Override
-	public DtoCustomer findCustomerByFirstName(String firstName) {
+	public List<DtoCustomer> findCustomerByFirstName(String firstName) {
+		return toDtoList(customerRepository.findByFirstName(firstName));
+	}
 
-		Optional<Customer> optCustomer = customerRepository.findByFirstName(firstName);
+	@Override
+	public Page<DtoCustomer> findAllPageableDto(Pageable pageable) {
+		Page<Customer> customerPage = customerRepository.findAll(pageable);
+
+	    if (customerPage.isEmpty()) {
+	        throw new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, null));
+	    }
+
+	    List<DtoCustomer> dtoCustomers = new ArrayList<>();
+	    for (Customer customer : customerPage.getContent()) {
+	        dtoCustomers.add(toDto(customer));
+	    }
+
+	    return new org.springframework.data.domain.PageImpl<>(
+	        dtoCustomers, 
+	        pageable, 
+	        customerPage.getTotalElements()
+	    );
+	}
+
+	@Override
+	public DtoAddress updateCustomerAddress(Long customerId, DtoAddressIU dtoAddressIU) {
+		
+		Optional<Customer> optCustomer = customerRepository.findById(customerId);
 		if (optCustomer.isEmpty()) {
-			throw new BaseException(new ErrorMessage(MessageType.CUSTOMER_NOT_FOUND, firstName));
+			throw new BaseException(new ErrorMessage(MessageType.CUSTOMER_NOT_FOUND, customerId.toString()));
 		}
-
-		return toDto(optCustomer.get());
-
+		
+		
+		Customer customer = optCustomer.get();
+		Address addressToUpdate = customer.getAddress();
+		BeanUtils.copyProperties(dtoAddressIU, addressToUpdate);
+		DtoAddress dtoAddress = new DtoAddress();
+		BeanUtils.copyProperties(addressToUpdate, dtoAddress);
+		
+		Address updatedAddress = addressRepository.save(addressToUpdate);
+		
+		
+		customer.setAddress(updatedAddress);
+		
+		customerRepository.save(customer);
+		
+		return dtoAddress;
 	}
 
 }
