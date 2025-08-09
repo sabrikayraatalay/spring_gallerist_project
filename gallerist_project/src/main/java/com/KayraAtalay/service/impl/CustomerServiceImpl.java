@@ -73,6 +73,7 @@ public class CustomerServiceImpl implements ICustomerService {
 		BeanUtils.copyProperties(customer.getAddress(), dtoAddress);
 		BeanUtils.copyProperties(customer.getAccount(), dtoAccount);
 
+		dtoCustomer.setCreateTime(customer.getCreateTime());
 		dtoCustomer.setDtoAddress(dtoAddress);
 		dtoCustomer.setDtoAccount(dtoAccount);
 
@@ -184,5 +185,7 @@ public class CustomerServiceImpl implements ICustomerService {
 		
 		return dtoAddress;
 	}
+
+	
 
 }

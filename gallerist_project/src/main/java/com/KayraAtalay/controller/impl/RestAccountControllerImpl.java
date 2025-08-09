@@ -11,6 +11,7 @@ import com.KayraAtalay.controller.RestBaseController;
 import com.KayraAtalay.controller.RootEntity;
 import com.KayraAtalay.dto.DtoAccount;
 import com.KayraAtalay.dto.DtoAccountIU;
+import com.KayraAtalay.dto.LoadMoneyRequest;
 import com.KayraAtalay.service.IAccountService;
 
 import jakarta.validation.Valid;
@@ -26,6 +27,12 @@ public class RestAccountControllerImpl extends RestBaseController implements IRe
 	@Override
 	public RootEntity<DtoAccount> saveAccount(@Valid @RequestBody DtoAccountIU dtoAccountIU) {
 		return ok(accountService.saveAccount(dtoAccountIU));
+	}
+
+	@PostMapping("/load-money")
+	@Override
+	public RootEntity<DtoAccount> loadMoneyToAccount(@RequestBody LoadMoneyRequest request) {
+				return ok(accountService.loadMoneyToAccount(request));
 	}
 
 }

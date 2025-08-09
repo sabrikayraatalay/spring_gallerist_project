@@ -73,7 +73,7 @@ public class RestCustomerControllerImpl extends RestBaseController implements IR
 	@PutMapping("/update/address/{id}")
 	@Override
 	public RootEntity<DtoAddress> updateCustomerAddress(@PathVariable Long id, 
-														@RequestBody DtoAddressIU dtoAddressIU) {
+														@Valid @RequestBody DtoAddressIU dtoAddressIU) {
 		
 		return ok(customerService.updateCustomerAddress(id, dtoAddressIU));
 	}

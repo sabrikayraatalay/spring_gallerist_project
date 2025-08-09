@@ -11,5 +11,7 @@ import com.KayraAtalay.model.Account;
 public interface AccountRepository extends JpaRepository<Account, Long>{
 	
 	Optional<Account> findByAccountNo(String accountNo);
+	
+	Optional<Account> findByIban(String iban);
 
 }
