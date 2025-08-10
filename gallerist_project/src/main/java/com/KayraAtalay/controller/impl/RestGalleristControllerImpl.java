@@ -33,18 +33,14 @@ public class RestGalleristControllerImpl extends RestBaseController implements I
 	@PostMapping("/save")
 	@Override
 	public RootEntity<DtoGallerist> saveGallerist(@Valid @RequestBody DtoGalleristIU dtoGalleristIU) {
-				return ok(galleristService.saveGallerist(dtoGalleristIU));
+		return ok(galleristService.saveGallerist(dtoGalleristIU));
 	}
 
 	@GetMapping("/list/pageable")
 	@Override
 	public RootEntity<RestPageableEntity<DtoGallerist>> findAllPageable(PageableRequest request) {
-		
 		Page<DtoGallerist> page = galleristService.findAllPageableDto(toPageable(request));
-		
-		RestPageableEntity<DtoGallerist> pageableResponse = toPageableResponse(page, page.getContent());
-
-		return ok(pageableResponse);
+		return ok(toPageableResponse(page, page.getContent()));
 	}
 
 	@GetMapping("/{id}")
@@ -55,9 +51,7 @@ public class RestGalleristControllerImpl extends RestBaseController implements I
 
 	@PutMapping("/update/address/{id}")
 	@Override
-	public RootEntity<DtoAddress> updateGalleristAddress(@PathVariable("id") Long galleristId, 
-														 @RequestBody DtoAddressIU dtoAddressIU) {
+	public RootEntity<DtoAddress> updateGalleristAddress(@PathVariable("id") Long galleristId, @RequestBody DtoAddressIU dtoAddressIU) {
 		return ok(galleristService.updateGalleristAddress(galleristId, dtoAddressIU));
 	}
-
 }

@@ -43,10 +43,8 @@ public class RestAddressControllerImpl extends RestBaseController implements IRe
 	@GetMapping("/list/pageable")
 	@Override
 	public RootEntity<RestPageableEntity<DtoAddress>> findAllPageable(PageableRequest pageable) {
-		
-		Page<DtoAddress> page = addressService.findAllPageableDto(toPageable(pageable));
-		RestPageableEntity<DtoAddress> pageableResponse = toPageableResponse(page, page.getContent());
-		return ok(pageableResponse);
+	    Page<DtoAddress> page = addressService.findAllPageableDto(toPageable(pageable));
+	    return ok(toPageableResponse(page, page.getContent()));
 	}
 
 	@DeleteMapping("/delete/{id}")

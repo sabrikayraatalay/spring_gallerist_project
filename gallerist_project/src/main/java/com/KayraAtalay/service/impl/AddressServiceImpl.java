@@ -1,8 +1,6 @@
 package com.KayraAtalay.service.impl;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
@@ -19,63 +17,40 @@ import com.KayraAtalay.exception.MessageType;
 import com.KayraAtalay.model.Address;
 import com.KayraAtalay.repository.AddressRepository;
 import com.KayraAtalay.service.IAddressService;
+import com.KayraAtalay.utils.DtoConverter;
 
 @Service
-public class AddressServiceImpl implements IAddressService{
+public class AddressServiceImpl implements IAddressService {
 	
 	@Autowired
 	private AddressRepository addressRepository;
-	
+
 	private Address createAddress(DtoAddressIU dtoAddressIU) {
 		Address address = new Address();
 		address.setCreateTime(new Date());
-		
 		BeanUtils.copyProperties(dtoAddressIU, address);
-		
 		return address;
 	}
 	
-	private DtoAddress toDto(Address address) {
-		DtoAddress dtoAddress = new DtoAddress();
-		
-		BeanUtils.copyProperties(address, dtoAddress);
-		
-		return dtoAddress;
-	}
-
 	@Override
 	public DtoAddress saveAddress(DtoAddressIU dtoAddressIU) {
-		DtoAddress dtoAddress = new DtoAddress();
 		Address savedAddress = addressRepository.save(createAddress(dtoAddressIU));
-		
-		BeanUtils.copyProperties(savedAddress, dtoAddress);
-		return dtoAddress;
+		return DtoConverter.toDto(savedAddress);
 	}
 
 	@Override
 	public Page<Address> findAllPageable(Pageable pageable) {
-		Page<Address> page = addressRepository.findAll(pageable);
-		return page;
+		return addressRepository.findAll(pageable);
 	}
 
 	@Override
 	public Page<DtoAddress> findAllPageableDto(Pageable pageable) {
 		Page<Address> addressPage = addressRepository.findAll(pageable);
-
-	    if (addressPage.isEmpty()) {
-	        throw new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, null));
-	    }
-
-	    List<DtoAddress> dtoAddresses = new ArrayList<>();
-	    for (Address address : addressPage.getContent()) {
-	        dtoAddresses.add(toDto(address));
-	    }
-
-	    return new org.springframework.data.domain.PageImpl<>(
-	        dtoAddresses, 
-	        pageable, 
-	        addressPage.getTotalElements()
-	    );
+		if (addressPage.isEmpty()) {
+			throw new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, null));
+		}
+		
+		return addressPage.map(DtoConverter::toDto);
 	}
 
 	@Override
@@ -84,8 +59,7 @@ public class AddressServiceImpl implements IAddressService{
 		if (optAddress.isEmpty()) {
 			throw new BaseException(new ErrorMessage(MessageType.ADDRESS_NOT_FOUND, id.toString()));
 		}
-		
-		return toDto(optAddress.get());
+		return DtoConverter.toDto(optAddress.get());
 	}
 
 	@Override
@@ -94,8 +68,7 @@ public class AddressServiceImpl implements IAddressService{
 		if (optAddress.isEmpty()) {
 			throw new BaseException(new ErrorMessage(MessageType.ADDRESS_NOT_FOUND, id.toString()));
 		}
-		addressRepository.delete(optAddress.get());
-		return toDto(optAddress.get());
+		addressRepository.deleteById(id);
+		return DtoConverter.toDto(optAddress.get());
 	}
-
 }

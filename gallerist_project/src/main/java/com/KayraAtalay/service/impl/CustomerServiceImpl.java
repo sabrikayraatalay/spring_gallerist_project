@@ -26,6 +26,7 @@ import com.KayraAtalay.repository.AccountRepository;
 import com.KayraAtalay.repository.AddressRepository;
 import com.KayraAtalay.repository.CustomerRepository;
 import com.KayraAtalay.service.ICustomerService;
+import com.KayraAtalay.utils.DtoConverter;
 
 @Service
 public class CustomerServiceImpl implements ICustomerService {
@@ -39,7 +40,7 @@ public class CustomerServiceImpl implements ICustomerService {
 	@Autowired
 	private AccountRepository accountRepository;
 
-    // --- PRIVATE HELPER METHODS ---
+	// --- PRIVATE HELPER METHODS ---
 
 	private Customer createCustomer(DtoCustomerIU dtoCustomerIU) {
 		Optional<Address> optAddress = addressRepository.findById(dtoCustomerIU.getAddressId());
@@ -64,22 +65,6 @@ public class CustomerServiceImpl implements ICustomerService {
 		return customer;
 	}
 
-	private DtoCustomer toDto(Customer customer) {
-		DtoCustomer dtoCustomer = new DtoCustomer();
-		DtoAddress dtoAddress = new DtoAddress();
-		DtoAccount dtoAccount = new DtoAccount();
-
-		BeanUtils.copyProperties(customer, dtoCustomer);
-		BeanUtils.copyProperties(customer.getAddress(), dtoAddress);
-		BeanUtils.copyProperties(customer.getAccount(), dtoAccount);
-
-		dtoCustomer.setCreateTime(customer.getCreateTime());
-		dtoCustomer.setDtoAddress(dtoAddress);
-		dtoCustomer.setDtoAccount(dtoAccount);
-
-		return dtoCustomer;
-	}
-
 	private List<DtoCustomer> toDtoList(List<Customer> customers) {
 		if (customers.isEmpty()) {
 			throw new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, null));
@@ -88,13 +73,13 @@ public class CustomerServiceImpl implements ICustomerService {
 		List<DtoCustomer> dtoCustomers = new ArrayList<>();
 
 		for (Customer customer : customers) {
-			dtoCustomers.add(toDto(customer));
+			dtoCustomers.add(DtoConverter.toDto(customer));
 		}
 
 		return dtoCustomers;
 	}
-    
-    // --- PUBLIC SERVICE METHODS ---
+
+	// --- PUBLIC SERVICE METHODS ---
 
 	@Override
 	public DtoCustomer saveCustomer(DtoCustomerIU dtoCustomerIU) {
@@ -104,7 +89,7 @@ public class CustomerServiceImpl implements ICustomerService {
 		}
 
 		Customer savedCustomer = customerRepository.save(createCustomer(dtoCustomerIU));
-		return toDto(savedCustomer);
+		return DtoConverter.toDto(savedCustomer);
 	}
 
 	@Override
@@ -114,13 +99,13 @@ public class CustomerServiceImpl implements ICustomerService {
 			throw new BaseException(new ErrorMessage(MessageType.CUSTOMER_NOT_FOUND, id.toString()));
 		}
 
-		return toDto(optional.get());
+		return DtoConverter.toDto(optional.get());
 	}
 
 	@Override
 	public Page<Customer> findAllPageable(Pageable pageable) {
-		Page<Customer> page = customerRepository.findAll(pageable);
-		return page;
+		return customerRepository.findAll(pageable);
+
 	}
 
 	@Override
@@ -130,10 +115,7 @@ public class CustomerServiceImpl implements ICustomerService {
 			throw new BaseException(new ErrorMessage(MessageType.CUSTOMER_NOT_FOUND, id.toString()));
 		}
 
-		DtoAccount dtoAccount = new DtoAccount();
-		BeanUtils.copyProperties(optCustomer.get().getAccount(), dtoAccount);
-
-		return dtoAccount;
+		return DtoConverter.toDto(optCustomer.get().getAccount());
 	}
 
 	@Override
@@ -145,47 +127,32 @@ public class CustomerServiceImpl implements ICustomerService {
 	public Page<DtoCustomer> findAllPageableDto(Pageable pageable) {
 		Page<Customer> customerPage = customerRepository.findAll(pageable);
 
-	    if (customerPage.isEmpty()) {
-	        throw new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, null));
-	    }
+		if (customerPage.isEmpty()) {
+			throw new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, null));
+		}
 
-	    List<DtoCustomer> dtoCustomers = new ArrayList<>();
-	    for (Customer customer : customerPage.getContent()) {
-	        dtoCustomers.add(toDto(customer));
-	    }
-
-	    return new org.springframework.data.domain.PageImpl<>(
-	        dtoCustomers, 
-	        pageable, 
-	        customerPage.getTotalElements()
-	    );
+		return customerPage.map(DtoConverter::toDto);
 	}
 
 	@Override
 	public DtoAddress updateCustomerAddress(Long customerId, DtoAddressIU dtoAddressIU) {
-		
+
 		Optional<Customer> optCustomer = customerRepository.findById(customerId);
 		if (optCustomer.isEmpty()) {
 			throw new BaseException(new ErrorMessage(MessageType.CUSTOMER_NOT_FOUND, customerId.toString()));
 		}
-		
-		
+
 		Customer customer = optCustomer.get();
 		Address addressToUpdate = customer.getAddress();
-		BeanUtils.copyProperties(dtoAddressIU, addressToUpdate);
-		DtoAddress dtoAddress = new DtoAddress();
-		BeanUtils.copyProperties(addressToUpdate, dtoAddress);
-		
-		Address updatedAddress = addressRepository.save(addressToUpdate);
-		
-		
-		customer.setAddress(updatedAddress);
-		
-		customerRepository.save(customer);
-		
-		return dtoAddress;
-	}
 
-	
+		BeanUtils.copyProperties(dtoAddressIU, addressToUpdate);
+
+		Address updatedAddress = addressRepository.save(addressToUpdate);
+
+		customer.setAddress(updatedAddress);
+		customerRepository.save(customer);
+
+		return DtoConverter.toDto(updatedAddress);
+	}
 
 }

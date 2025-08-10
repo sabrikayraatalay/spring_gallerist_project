@@ -17,6 +17,7 @@ import com.KayraAtalay.exception.MessageType;
 import com.KayraAtalay.model.Account;
 import com.KayraAtalay.repository.AccountRepository;
 import com.KayraAtalay.service.IAccountService;
+import com.KayraAtalay.utils.DtoConverter;
 
 @Service
 public class AccountServiceImpl implements IAccountService {
@@ -24,8 +25,6 @@ public class AccountServiceImpl implements IAccountService {
 	@Autowired
 	private AccountRepository accountRepository;
 	
-	
-
 	private Account createAccount(DtoAccountIU dtoAccountIU) {
 		Account account = new Account();
 		account.setCreateTime(new Date());
@@ -34,7 +33,7 @@ public class AccountServiceImpl implements IAccountService {
 
 		return account;
 	}
-
+	
 	@Override
 	public DtoAccount saveAccount(DtoAccountIU dtoAccountIU) {
 	
@@ -42,17 +41,13 @@ public class AccountServiceImpl implements IAccountService {
 		
 		Optional<Account> optAccountNo = accountRepository.findByAccountNo(requestAccountNo);
 		
-		if(optAccountNo.equals(requestAccountNo)) {
+		if(optAccountNo.isPresent()) {
 			throw new BaseException(new ErrorMessage(MessageType.ACCOUNT_NO_ALREADY_EXISTS, dtoAccountIU.getAccountNo()));
 		}
 		
 		Account savedAccount = accountRepository.save(createAccount(dtoAccountIU));
 		
-		DtoAccount dtoAccount = new DtoAccount();
-		
-		BeanUtils.copyProperties(savedAccount, dtoAccount);
-
-		return dtoAccount;
+		return DtoConverter.toDto(savedAccount);
 	}
 	
 	@Override
@@ -76,12 +71,8 @@ public class AccountServiceImpl implements IAccountService {
 		account.setAmount(updatedAmount);
 		
 		Account updatedAccount = accountRepository.save(account);
-		DtoAccount dtoAccount = new DtoAccount();
 		
-		BeanUtils.copyProperties(updatedAccount, dtoAccount);
-		
-		
-		return dtoAccount;
+		return DtoConverter.toDto(updatedAccount);
 	}
 
 }

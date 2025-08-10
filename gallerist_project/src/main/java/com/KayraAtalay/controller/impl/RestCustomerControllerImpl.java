@@ -49,33 +49,25 @@ public class RestCustomerControllerImpl extends RestBaseController implements IR
 	@GetMapping("/list/pageable")
 	@Override
 	public RootEntity<RestPageableEntity<DtoCustomer>> findAllPageable(PageableRequest pageableRequest) {
-		
-		
 		Page<DtoCustomer> page = customerService.findAllPageableDto(toPageable(pageableRequest));
-		
-		RestPageableEntity<DtoCustomer> pageableResponse = toPageableResponse(page, page.getContent());
-		
-		return ok(pageableResponse);
+		return ok(toPageableResponse(page, page.getContent()));
 	}
 
 	@GetMapping("/account/{id}")
 	@Override
 	public RootEntity<DtoAccount> findCustomerAccount(@PathVariable Long id) {
-				return ok(customerService.findCustomerAccount(id));
+		return ok(customerService.findCustomerAccount(id));
 	}
 
 	@GetMapping("")
 	@Override
 	public RootEntity<List<DtoCustomer>> findCustomerByFirstName(@RequestParam String firstName) {
-		return ok(customerService.findCustomerByFirstName(firstName.substring(0, 1).toUpperCase() + firstName.substring(1)));
+		return ok(customerService.findCustomerByFirstName(firstName));
 	}
 
 	@PutMapping("/update/address/{id}")
 	@Override
-	public RootEntity<DtoAddress> updateCustomerAddress(@PathVariable Long id, 
-														@Valid @RequestBody DtoAddressIU dtoAddressIU) {
-		
+	public RootEntity<DtoAddress> updateCustomerAddress(@PathVariable Long id, @Valid @RequestBody DtoAddressIU dtoAddressIU) {
 		return ok(customerService.updateCustomerAddress(id, dtoAddressIU));
 	}
-
 }
