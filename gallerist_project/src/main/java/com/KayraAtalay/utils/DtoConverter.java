@@ -7,18 +7,20 @@ import com.KayraAtalay.dto.DtoAddress;
 import com.KayraAtalay.dto.DtoCar;
 import com.KayraAtalay.dto.DtoCustomer;
 import com.KayraAtalay.dto.DtoGallerist;
+import com.KayraAtalay.dto.DtoGalleristCar;
 import com.KayraAtalay.model.Account;
 import com.KayraAtalay.model.Address;
 import com.KayraAtalay.model.Car;
 import com.KayraAtalay.model.Customer;
 import com.KayraAtalay.model.Gallerist;
+import com.KayraAtalay.model.GalleristCar;
 
 public class DtoConverter {
 
 	public static DtoAddress toDto(Address address) {
-	    DtoAddress dtoAddress = new DtoAddress();
-	    BeanUtils.copyProperties(address, dtoAddress);
-	    return dtoAddress;
+		DtoAddress dtoAddress = new DtoAddress();
+		BeanUtils.copyProperties(address, dtoAddress);
+		return dtoAddress;
 	}
 
 	public static DtoAccount toDto(Account account) {
@@ -50,5 +52,19 @@ public class DtoConverter {
 		dtoGallerist.setAddress(toDto(gallerist.getAddress()));
 
 		return dtoGallerist;
+	}
+
+	public static DtoGalleristCar toDto(GalleristCar galleristCar) {
+		DtoGalleristCar dtoGalleristCar = new DtoGalleristCar();
+		Gallerist gallerist = galleristCar.getGallerist();
+		Car car = galleristCar.getCar();
+
+		BeanUtils.copyProperties(galleristCar, dtoGalleristCar);
+
+		dtoGalleristCar.setGallerist(toDto(gallerist));
+		dtoGalleristCar.setCar(toDto(car));
+
+		return dtoGalleristCar;
+
 	}
 }
