@@ -1,6 +1,8 @@
 package com.KayraAtalay.controller.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.KayraAtalay.controller.IRestSaledCarController;
 import com.KayraAtalay.controller.RestBaseController;
 import com.KayraAtalay.controller.RootEntity;
+import com.KayraAtalay.dto.DtoGalleristSaledCar;
 import com.KayraAtalay.dto.DtoSaledCar;
 import com.KayraAtalay.dto.DtoSaledCarIU;
 import com.KayraAtalay.service.ISaledCarService;
@@ -26,6 +29,12 @@ public class RestSaledCarControllerImpl extends RestBaseController implements IR
 	@Override
 	public RootEntity<DtoSaledCar> buyCar(@Valid @RequestBody DtoSaledCarIU dtoSaledCarIU) {
 				return ok(saledCarService.buyCar(dtoSaledCarIU));
+	}
+
+	@GetMapping("/find/gallerist/{id}/sales")
+	@Override
+	public RootEntity<DtoGalleristSaledCar> findGalleristSales(@PathVariable Long id) {
+				return ok(saledCarService.findGalleristSales(id));
 	}
 
 }

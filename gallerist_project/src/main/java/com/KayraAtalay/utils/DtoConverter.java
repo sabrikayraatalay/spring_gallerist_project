@@ -1,5 +1,7 @@
 package com.KayraAtalay.utils;
 
+import java.util.Date;
+
 import org.springframework.beans.BeanUtils;
 
 import com.KayraAtalay.dto.DtoAccount;
@@ -8,12 +10,14 @@ import com.KayraAtalay.dto.DtoCar;
 import com.KayraAtalay.dto.DtoCustomer;
 import com.KayraAtalay.dto.DtoGallerist;
 import com.KayraAtalay.dto.DtoGalleristCar;
+import com.KayraAtalay.dto.DtoSaledCar;
 import com.KayraAtalay.model.Account;
 import com.KayraAtalay.model.Address;
 import com.KayraAtalay.model.Car;
 import com.KayraAtalay.model.Customer;
 import com.KayraAtalay.model.Gallerist;
 import com.KayraAtalay.model.GalleristCar;
+import com.KayraAtalay.model.SaledCar;
 
 public class DtoConverter {
 
@@ -65,6 +69,40 @@ public class DtoConverter {
 		dtoGalleristCar.setCar(toDto(car));
 
 		return dtoGalleristCar;
+
+	}
+	
+	public static DtoSaledCar toDto(SaledCar saledCar) {
+		DtoSaledCar dtoSaledCar = new DtoSaledCar();
+		DtoCustomer dtoCustomer = new DtoCustomer();
+		DtoGallerist dtoGallerist = new DtoGallerist();
+		DtoCar dtoCar = new DtoCar();
+		DtoAddress dtoAddress = new DtoAddress();
+		DtoAccount dtoAccount = new DtoAccount();
+
+		BeanUtils.copyProperties(saledCar, dtoSaledCar);
+		BeanUtils.copyProperties(saledCar.getCustomer(), dtoCustomer);
+		BeanUtils.copyProperties(saledCar.getGallerist(), dtoGallerist);
+		BeanUtils.copyProperties(saledCar.getCar(), dtoCar);
+		BeanUtils.copyProperties(saledCar.getCustomer().getAddress(), dtoAddress);
+		BeanUtils.copyProperties(saledCar.getCustomer().getAccount(), dtoAccount);
+
+		// customer
+		dtoCustomer.setDtoAddress(dtoAddress);
+		dtoCustomer.setDtoAccount(dtoAccount);
+		dtoSaledCar.setCreateTime(new Date());
+		dtoSaledCar.setCustomer(dtoCustomer);
+
+		// gallerist
+		dtoGallerist.setCreateTime(new Date());
+		dtoGallerist.setAddress(dtoAddress);
+		dtoSaledCar.setGallerist(dtoGallerist);
+
+		// car
+		dtoCar.setCreateTime(new Date());
+		dtoSaledCar.setCar(dtoCar);
+
+		return dtoSaledCar;
 
 	}
 }

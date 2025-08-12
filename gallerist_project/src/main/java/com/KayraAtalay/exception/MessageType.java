@@ -27,7 +27,8 @@ public enum MessageType {
 	CAR_IS_NOT_BELONG_TO_GALLERIST("1021", "This car is not belong this gallerist"),
 	ACCOUNT_NO_ALREADY_EXISTS("1022", "This Account Number is already belongs to another account"),
 	INVALID_AMOUNT("1023", "Invalid amount to load money"),
-	GALLERISTCAR_NOT_FOUND("1024", "Could not find any relations between any gallerist and any car");
+	GALLERISTCAR_NOT_FOUND("1024", "Could not find any relations between any gallerist and any car"),
+	SALES_NOT_FOUND("1025", "This gallerist has no sales");
 	
 	
 	
